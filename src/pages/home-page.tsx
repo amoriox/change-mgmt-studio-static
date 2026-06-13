@@ -1,46 +1,6 @@
 import { Link } from "react-router-dom";
-import {
-  ArrowRight,
-  Briefcase,
-  Download,
-  FileStack,
-  Palette,
-  Save,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-const features = [
-  {
-    icon: Briefcase,
-    title: "Client workspaces",
-    description:
-      "Organize each engagement with program context, industry notes, and firm branding.",
-  },
-  {
-    icon: FileStack,
-    title: "Consulting template library",
-    description:
-      "Eight proven deliverables—from impact assessment through benefits tracking.",
-  },
-  {
-    icon: Palette,
-    title: "Branded exports",
-    description:
-      "Primary and accent colors flow into HTML deliverables ready for client review.",
-  },
-  {
-    icon: Save,
-    title: "Saved drafts",
-    description:
-      "Pick up where you left off. Drafts persist locally in your browser.",
-  },
-  {
-    icon: Download,
-    title: "Markdown & HTML export",
-    description:
-      "Download polished documents for decks, portals, or further editing.",
-  },
-];
 
 const templates = [
   "Change Impact Assessment",
@@ -79,35 +39,13 @@ export function HomePage() {
             </Link>
             <Link to="/dashboard">
               <Button
-                variant="secondary"
-                className="border-slate-600 bg-transparent text-white hover:bg-white/10"
+                variant="ghost"
+                className="text-slate-300 hover:bg-transparent hover:text-white"
               >
                 Create a workspace
               </Button>
             </Link>
           </div>
-        </div>
-      </section>
-
-      <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6">
-        <h2 className="font-display text-2xl font-bold text-navy-900">
-          Built for consulting workflows
-        </h2>
-        <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {features.map((f) => (
-            <div
-              key={f.title}
-              className="rounded-xl border border-slate-200 bg-white p-5"
-            >
-              <f.icon className="h-8 w-8 text-teal-600" />
-              <h3 className="mt-4 font-display font-semibold text-navy-900">
-                {f.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-600">
-                {f.description}
-              </p>
-            </div>
-          ))}
         </div>
       </section>
 
