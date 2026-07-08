@@ -9,8 +9,14 @@ export const DEFAULT_BRANDING: WorkspaceBranding = {
   logoUrl: "",
 };
 
-export function createWorkspace(partial?: Partial<Workspace>): Workspace {
+export function createWorkspace(
+  partial?: Partial<Omit<Workspace, "branding">> & {
+    branding?: Partial<WorkspaceBranding>;
+  }
+): Workspace {
   const now = new Date().toISOString();
+  const { branding, ...rest } = partial ?? {};
+
   return {
     id: createId(),
     name: "New Client Engagement",
@@ -18,7 +24,7 @@ export function createWorkspace(partial?: Partial<Workspace>): Workspace {
     programName: "Enterprise Transformation",
     createdAt: now,
     updatedAt: now,
-    branding: { ...DEFAULT_BRANDING },
-    ...partial,
+    branding: { ...DEFAULT_BRANDING, ...branding },
+    ...rest,
   };
 }

@@ -15,7 +15,11 @@ function read<T>(key: string, fallback: T): T {
 
 function write<T>(key: string, value: T): void {
   if (typeof window === "undefined") return;
-  localStorage.setItem(key, JSON.stringify(value));
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    throw new Error("Unable to save data in browser storage.");
+  }
 }
 
 export function getWorkspaces(): Workspace[] {
@@ -72,5 +76,8 @@ export function deleteDraft(id: string): void {
 }
 
 export function createId(): string {
-  return crypto.randomUUID();
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
 }

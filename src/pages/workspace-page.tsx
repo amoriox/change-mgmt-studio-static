@@ -133,13 +133,13 @@ export function WorkspacePage() {
                   </p>
                 </div>
                 <div className="flex gap-2">
-                  <Link
+                  <Button
                     to={`/workspaces/${id}/templates/${draft.templateId}?draft=${draft.id}`}
+                    variant="secondary"
+                    size="sm"
                   >
-                    <Button variant="secondary" size="sm">
-                      Continue
-                    </Button>
-                  </Link>
+                    Continue
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"

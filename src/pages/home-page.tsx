@@ -1,4 +1,3 @@
-import { Link } from "react-router-dom";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -31,20 +30,17 @@ export function HomePage() {
             sustainment.
           </p>
           <div className="mt-10 flex flex-wrap gap-3">
-            <Link to="/dashboard">
-              <Button className="bg-teal-600 hover:bg-teal-500">
-                Open dashboard
-                <ArrowRight className="h-4 w-4" />
-              </Button>
-            </Link>
-            <Link to="/dashboard">
-              <Button
-                variant="ghost"
-                className="text-slate-300 hover:bg-transparent hover:text-white"
-              >
-                Create a workspace
-              </Button>
-            </Link>
+            <Button to="/dashboard" className="bg-teal-600 hover:bg-teal-500">
+              Open dashboard
+              <ArrowRight className="h-4 w-4" />
+            </Button>
+            <Button
+              to="/dashboard?create=1"
+              variant="ghost"
+              className="text-slate-300 hover:bg-transparent hover:text-white"
+            >
+              Create a workspace
+            </Button>
           </div>
         </div>
       </section>

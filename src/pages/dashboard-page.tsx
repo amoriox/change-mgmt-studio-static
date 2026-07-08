@@ -1,4 +1,5 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CreateWorkspaceModal } from "@/components/create-workspace-modal";
@@ -6,9 +7,19 @@ import { WorkspaceCard } from "@/components/workspace-card";
 import { useDrafts, useWorkspaces } from "@/hooks/use-storage";
 
 export function DashboardPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const { workspaces, ready, save } = useWorkspaces();
   const { drafts } = useDrafts();
   const [modalOpen, setModalOpen] = useState(false);
+
+  useEffect(() => {
+    if (searchParams.get("create") === "1") {
+      setModalOpen(true);
+      const next = new URLSearchParams(searchParams);
+      next.delete("create");
+      setSearchParams(next, { replace: true });
+    }
+  }, [searchParams, setSearchParams]);
 
   const draftCounts = useMemo(() => {
     const map: Record<string, number> = {};
@@ -29,7 +40,7 @@ export function DashboardPage() {
             Manage engagements, branding, templates, and saved drafts.
           </p>
         </div>
-        <Button onClick={() => setModalOpen(true)}>
+        <Button type="button" onClick={() => setModalOpen(true)}>
           <Plus className="h-4 w-4" />
           New workspace
         </Button>
@@ -40,7 +51,7 @@ export function DashboardPage() {
       ) : workspaces.length === 0 ? (
         <div className="mt-16 rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
           <p className="text-slate-600">No workspaces yet.</p>
-          <Button className="mt-4" onClick={() => setModalOpen(true)}>
+          <Button type="button" className="mt-4" onClick={() => setModalOpen(true)}>
             Create your first workspace
           </Button>
         </div>

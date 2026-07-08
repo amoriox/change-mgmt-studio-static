@@ -1,6 +1,5 @@
-"use client";
-
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
@@ -16,43 +15,63 @@ export function CreateWorkspaceModal({
   onClose: () => void;
   onCreate: (workspace: Workspace) => void;
 }) {
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [client, setClient] = useState("");
   const [program, setProgram] = useState("");
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    if (!open) return;
+    setError("");
+    setName("");
+    setClient("");
+    setProgram("");
+  }, [open]);
 
   if (!open) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const workspace = createWorkspace({
-      name: name || "New Client Engagement",
-      programName: program || "Enterprise Transformation",
-      branding: {
-        firmName: "Your Consulting Firm",
-        clientName: client || "Client Organization",
-        primaryColor: "#1e3a5f",
-        accentColor: "#0d9488",
-        logoUrl: "",
-      },
-    });
-    onCreate(workspace);
-    setName("");
-    setClient("");
-    setProgram("");
-    onClose();
+    setError("");
+
+    try {
+      const workspace = createWorkspace({
+        name: name.trim() || "New Client Engagement",
+        programName: program.trim() || "Enterprise Transformation",
+        branding: {
+          clientName: client.trim() || "Client Organization",
+        },
+      });
+      onCreate(workspace);
+      onClose();
+      navigate(`/workspaces/${workspace.id}`);
+    } catch {
+      setError("Could not save workspace. Check that browser storage is enabled.");
+    }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       <button
         type="button"
         className="absolute inset-0 bg-navy-950/40"
         onClick={onClose}
         aria-label="Close"
       />
-      <div className="relative w-full max-w-md rounded-xl bg-white p-6 shadow-xl">
+      <div
+        className="relative z-10 w-full max-w-md rounded-xl bg-white p-6 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+        onKeyDown={(e) => e.stopPropagation()}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="create-workspace-title"
+      >
         <div className="flex items-center justify-between">
-          <h2 className="font-display text-lg font-semibold text-navy-900">
+          <h2
+            id="create-workspace-title"
+            className="font-display text-lg font-semibold text-navy-900"
+          >
             New client workspace
           </h2>
           <button
@@ -65,9 +84,7 @@ export function CreateWorkspaceModal({
         </div>
         <form onSubmit={handleSubmit} className="mt-5 space-y-4">
           <div>
-            <Label htmlFor="ws-name" required>
-              Workspace name
-            </Label>
+            <Label htmlFor="ws-name">Workspace name</Label>
             <Input
               id="ws-name"
               placeholder="e.g. Acme Corp — ERP Rollout"
@@ -94,6 +111,13 @@ export function CreateWorkspaceModal({
               onChange={(e) => setProgram(e.target.value)}
             />
           </div>
+
+          {error && (
+            <p className="text-sm text-red-600" role="alert">
+              {error}
+            </p>
+          )}
+
           <div className="flex justify-end gap-2 pt-2">
             <Button type="button" variant="ghost" onClick={onClose}>
               Cancel
