@@ -1,12 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { Plus } from "lucide-react";
-import { Button } from "@/components/ui/button";
 import { CreateWorkspaceModal } from "@/components/create-workspace-modal";
 import { WorkspaceCard } from "@/components/workspace-card";
 import { useDrafts, useWorkspaces } from "@/hooks/use-storage";
+import type { Workspace } from "@/lib/types";
 
 export function DashboardPage() {
+  const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { workspaces, ready, save } = useWorkspaces();
   const { drafts } = useDrafts();
@@ -29,6 +30,12 @@ export function DashboardPage() {
     return map;
   }, [drafts]);
 
+  const handleCreate = (workspace: Workspace) => {
+    save(workspace);
+    setModalOpen(false);
+    navigate(`/workspaces/${workspace.id}`);
+  };
+
   return (
     <div className="mx-auto max-w-6xl px-4 py-10 sm:px-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
@@ -40,10 +47,14 @@ export function DashboardPage() {
             Manage engagements, branding, templates, and saved drafts.
           </p>
         </div>
-        <Button type="button" onClick={() => setModalOpen(true)}>
+        <button
+          type="button"
+          onClick={() => setModalOpen(true)}
+          className="inline-flex items-center justify-center gap-2 rounded-lg bg-navy-800 px-4 py-2 text-sm font-medium text-white shadow-sm transition-colors hover:bg-navy-700"
+        >
           <Plus className="h-4 w-4" />
           New workspace
-        </Button>
+        </button>
       </div>
 
       {!ready ? (
@@ -51,9 +62,13 @@ export function DashboardPage() {
       ) : workspaces.length === 0 ? (
         <div className="mt-16 rounded-xl border border-dashed border-slate-300 bg-white p-12 text-center">
           <p className="text-slate-600">No workspaces yet.</p>
-          <Button type="button" className="mt-4" onClick={() => setModalOpen(true)}>
+          <button
+            type="button"
+            onClick={() => setModalOpen(true)}
+            className="mt-4 inline-flex items-center justify-center rounded-lg bg-navy-800 px-4 py-2 text-sm font-medium text-white hover:bg-navy-700"
+          >
             Create your first workspace
-          </Button>
+          </button>
         </div>
       ) : (
         <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -70,7 +85,7 @@ export function DashboardPage() {
       <CreateWorkspaceModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        onCreate={(ws) => save(ws)}
+        onCreate={handleCreate}
       />
     </div>
   );

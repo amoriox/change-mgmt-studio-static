@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input, Label } from "@/components/ui/input";
@@ -15,11 +15,15 @@ export function CreateWorkspaceModal({
   onClose: () => void;
   onCreate: (workspace: Workspace) => void;
 }) {
-  const navigate = useNavigate();
+  const [mounted, setMounted] = useState(false);
   const [name, setName] = useState("");
   const [client, setClient] = useState("");
   const [program, setProgram] = useState("");
   const [error, setError] = useState("");
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -29,7 +33,20 @@ export function CreateWorkspaceModal({
     setProgram("");
   }, [open]);
 
-  if (!open) return null;
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", onKeyDown);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      document.body.style.overflow = "";
+    };
+  }, [open, onClose]);
+
+  if (!open || !mounted) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,25 +61,21 @@ export function CreateWorkspaceModal({
         },
       });
       onCreate(workspace);
-      onClose();
-      navigate(`/workspaces/${workspace.id}`);
     } catch {
       setError("Could not save workspace. Check that browser storage is enabled.");
     }
   };
 
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
       <button
         type="button"
-        className="absolute inset-0 bg-navy-950/40"
+        className="absolute inset-0 bg-slate-900/50"
         onClick={onClose}
-        aria-label="Close"
+        aria-label="Close dialog"
       />
       <div
-        className="relative z-10 w-full max-w-md rounded-xl bg-white p-6 shadow-xl"
-        onClick={(e) => e.stopPropagation()}
-        onKeyDown={(e) => e.stopPropagation()}
+        className="relative z-10 w-full max-w-md rounded-xl bg-white p-6 shadow-2xl"
         role="dialog"
         aria-modal="true"
         aria-labelledby="create-workspace-title"
@@ -126,6 +139,7 @@ export function CreateWorkspaceModal({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
